@@ -7,8 +7,11 @@ import six
 
 from pyfbsdk import (
     FBFindObjectsByName,
-    FBComponentList
+    FBComponentList,
+    FBPropertyType,
+    FBSystem
 )
+
 JSON_PREFIX = "JSON::"
 log = logging.getLogger("ayon_motionbuilder")
 
@@ -36,17 +39,24 @@ def read(container) -> dict:
 
         data[key.strip()] = value
 
-    data["instance_node"] = container
-
+    data["instance_node"] = container.Name
+    print(data)
     return data
 
 
-def imprint(container, data: dict) -> bool:
+def imprint(container:str, data: dict) -> bool:
     if not container:
         return False
-
+    container_group = next(
+        (obj_set for obj_set in FBSystem().Scene.Sets
+         if obj_set.Name == container), None)
     for key, value in data.items():
-        target_param = container.PropertyList.Find(key)
+        target_param = container_group.PropertyList.Find(key)
+        if not target_param:
+            container_group.PropertyCreate(
+                key, FBPropertyType.kFBPT_charptr,
+                value, False, True, None)
+
         target_param.SetLocked(False)
         target_param.Data = value
         if isinstance(value, (dict, list)):
@@ -56,6 +66,31 @@ def imprint(container, data: dict) -> bool:
         target_param.SetLocked(True)
 
     return True
+
+
+def lsattr(
+        attr: str,
+        value: Union[str, None] = None,
+        root: Union[str, None] = None) -> list:
+    """List nodes having attribute with specified value.
+
+    Args:
+        attr (str): Attribute name to match.
+        value (str, Optional): Value to match, of omitted, all nodes
+            with specified attribute are returned no matter of value.
+        root (str, Optional): Root node name. If omitted, scene root is used.
+
+    Returns:
+        list of nodes.
+    """
+    nodes = []
+    for obj_sets in FBSystem().Scene.Sets:
+        for prop in obj_sets.PropertyList:
+            if value and prop.AsString() == value:
+                nodes.append(obj_sets)
+            elif prop.GetName() == attr:
+                nodes.append(obj_sets)
+    return nodes
 
 
 def unique_namespace(namespace, format="%02d",
@@ -103,9 +138,9 @@ def unique_namespace(namespace, format="%02d",
     while increment_version:
         nr_namespace = namespace + format % iteration
         unique = prefix + nr_namespace + suffix
-        container_name = f"{unique}:{namespace}{con_suffix}"
         cl = FBComponentList()
-        if not FBFindObjectsByName((container_name), cl, True, True):
+        FBFindObjectsByName((f"{unique}:*"), cl, True, True)
+        if not cl:
             name_space = start + unique + end
             increment_version = False
             return name_space

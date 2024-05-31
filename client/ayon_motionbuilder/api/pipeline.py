@@ -4,7 +4,6 @@ import os
 from operator import attrgetter
 import logging
 import json
-import ast
 
 from ayon_core.host import HostBase, IWorkfileHost, ILoadHost, IPublishHost
 import pyblish.api
@@ -117,14 +116,15 @@ def ls() -> list:
 def containerise(name: str, context, objects, namespace=None, loader=None,
                  suffix="_CON"):
     data = {
-        "schema": "openpype: container-2.0",
+        "schema": "openpype:container-2.0",
         "id": AVALON_CONTAINER_ID,
         "name": name,
         "namespace": namespace or "",
         "loader": loader,
         "representation": context["representation"]["id"],
     }
-    container_group = FBSet(f"{name}{suffix}")
+    container_name = f"{name}{suffix}"
+    container_group = FBSet(container_name)
     for obj in objects:
         container_group.ConnectSrc(obj)
     container_group.ProcessObjectNamespace(
@@ -134,5 +134,6 @@ def containerise(name: str, context, objects, namespace=None, loader=None,
             key, FBPropertyType.kFBPT_charptr, value, False, True, None)
         target_param = container_group.PropertyList.Find(key)
         target_param.Data = value
-        target_param.SetLocked(True)
+    if not lib.imprint(container_name, data):
+        print(f"imprinting of {container_name} failed.")
     return container_group
