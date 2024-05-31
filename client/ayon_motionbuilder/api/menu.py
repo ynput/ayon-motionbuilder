@@ -5,7 +5,7 @@ import logging
 from qtpy import QtWidgets, QtCore
 from ayon_core.tools.utils import host_tools
 
-log = logging.getLogger("ayon_core.hosts.motionbuilder")
+log = logging.getLogger("ayon_motionbuilder")
 
 
 class AYONMenu(object):

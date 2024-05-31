@@ -10,7 +10,7 @@ from pyfbsdk import (
     FBComponentList
 )
 JSON_PREFIX = "JSON::"
-log = logging.getLogger("ayon_core.hosts.motionbuilder")
+log = logging.getLogger("ayon_motionbuilder")
 
 
 def read(container) -> dict:

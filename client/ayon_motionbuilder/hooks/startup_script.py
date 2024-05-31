@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Pre-launch to force motion builder startup script."""
 import os
-from ayon_core.hosts.motionbuilder import MOTION_BUILDER_HOST_DIR
+from ayon_motionbuilder import MOTION_BUILDER_HOST_DIR
 from ayon_applications import PreLaunchHook, LaunchTypes
 
 

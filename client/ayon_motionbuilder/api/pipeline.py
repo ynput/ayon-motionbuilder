@@ -14,9 +14,9 @@ from ayon_core.pipeline import (
     AVALON_CONTAINER_ID,
     AYON_CONTAINER_ID,
 )
-from ayon_core.hosts.motionbuilder import MOTION_BUILDER_HOST_DIR
-from ayon_core.hosts.motionbuilder.api.menu import AYONMenu
-from ayon_core.hosts.motionbuilder.api import lib
+from ayon_motionbuilder import MOTION_BUILDER_HOST_DIR
+from ayon_motionbuilder.api.menu import AYONMenu
+from ayon_motionbuilder.api import lib
 
 from pyfbsdk import (
     FBApplication,
@@ -27,7 +27,7 @@ from pyfbsdk import (
     FBPropertyType
 )
 
-log = logging.getLogger("ayon_core.hosts.motionbuilder")
+log = logging.getLogger("ayon_motionbuilder")
 
 PLUGINS_DIR = os.path.join(MOTION_BUILDER_HOST_DIR, "plugins")
 PUBLISH_PATH = os.path.join(PLUGINS_DIR, "publish")

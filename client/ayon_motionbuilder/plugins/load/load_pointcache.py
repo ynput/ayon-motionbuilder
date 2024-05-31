@@ -1,7 +1,7 @@
 import os
 from ayon_core.pipeline import load, get_representation_path
-from ayon_core.hosts.motionbuilder.api.pipeline import containerise
-from ayon_core.hosts.motionbuilder.api.lib import unique_namespace, imprint
+from ayon_motionbuilder.api.pipeline import containerise
+from ayon_motionbuilder.api.lib import unique_namespace, imprint
 from pyfbsdk import (
     FBApplication,
     FBElementAction,
