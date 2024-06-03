@@ -1,7 +1,7 @@
 import contextlib
 import logging
 import json
-from typing import Any, Dict, Union
+from typing import Union
 
 import six
 
@@ -40,25 +40,21 @@ def read(container) -> dict:
         data[key.strip()] = value
 
     data["instance_node"] = container.Name
-    print(data)
     return data
 
 
-def imprint(container:str, data: dict) -> bool:
+def imprint(container: str, data: dict) -> bool:
     if not container:
         return False
-    container_group = next(
-        (obj_set for obj_set in FBSystem().Scene.Sets
-         if obj_set.Name == container), None)
+    container_group = get_node_by_name(container)
     for key, value in data.items():
         target_param = container_group.PropertyList.Find(key)
-        if not target_param:
-            container_group.PropertyCreate(
-                key, FBPropertyType.kFBPT_charptr,
-                value, False, True, None)
-
+        if target_param is None:
+            container_group.PropertyCreate(key, FBPropertyType.kFBPT_charptr,
+                                           value, False, True, None)
+            target_param = container_group.PropertyList.Find(key)
+            return True
         target_param.SetLocked(False)
-        target_param.Data = value
         if isinstance(value, (dict, list)):
             target_param.Data = f"{JSON_PREFIX}{json.dumps(value)}"
         else:
@@ -94,7 +90,7 @@ def lsattr(
 
 
 def unique_namespace(namespace, format="%02d",
-                     prefix="", suffix="", con_suffix="CON"):
+                     prefix="", suffix=""):
     """Return unique namespace
 
     Arguments:
@@ -147,3 +143,14 @@ def unique_namespace(namespace, format="%02d",
         else:
             increment_version = True
         iteration += 1
+
+def get_node_by_name(node_name: str):
+    """Get instance node/container node by name
+
+    Args:
+        node_name (str): node name
+    """
+    matching_sets = [s for s in FBSystem().Scene.Sets
+                        if s.Name == node_name]
+    node = next(iter(matching_sets), None)
+    return node

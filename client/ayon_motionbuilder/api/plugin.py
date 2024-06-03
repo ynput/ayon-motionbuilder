@@ -1,18 +1,10 @@
 """Motion Builder specific AYON/Pyblish plugin definitions."""
-from abc import ABCMeta
-
-import six
-
-from ayon_core.lib import BoolDef
 from ayon_core.pipeline import (
-    CreatedInstance,
-    Creator,
-    CreatorError,
     AYON_INSTANCE_ID,
     AVALON_INSTANCE_ID,
 )
 
-from .lib import imprint, lsattr, read
+from .lib import lsattr
 
 
 class MotionBuilderCreatorBase(object):

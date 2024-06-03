@@ -1,7 +1,8 @@
-import os
 from ayon_core.pipeline import load, get_representation_path
 from ayon_motionbuilder.api.pipeline import containerise
-from ayon_motionbuilder.api.lib import unique_namespace, imprint
+from ayon_motionbuilder.api.lib import (
+    unique_namespace, imprint, get_node_by_name
+)
 from pyfbsdk import (
     FBApplication,
     FBElementAction,
@@ -28,9 +29,9 @@ class PointCacheLoader(load.LoaderPlugin):
         loadOptions.NamespaceList = namespace
         filename = self.filepath_from_context(context)
         app.FileAppend(filename, True, loadOptions)
-        cl = FBComponentList()
-        FBFindObjectsByName(namespace, cl, True, True)
-        objects = [obj for obj in cl]
+        component_List = FBComponentList()
+        FBFindObjectsByName(namespace, component_List, True, True)
+        objects = [obj for obj in component_List]
         return containerise(
             name, context, objects, namespace=namespace,
             loader=self.__class__.__name__
@@ -52,4 +53,6 @@ class PointCacheLoader(load.LoaderPlugin):
         self.update(container, context)
 
     def remove(self, container):
+        instance_node = container["instance_node"]
+        container = get_node_by_name(instance_node)
         container.FBDelete()

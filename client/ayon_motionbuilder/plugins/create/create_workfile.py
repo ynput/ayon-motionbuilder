@@ -4,12 +4,11 @@ import ayon_api
 
 from ayon_core.pipeline import CreatedInstance, AutoCreator
 from ayon_motionbuilder.api import plugin
-from ayon_motionbuilder.api.lib import read, imprint
-from pyfbsdk import (
-    FBSet,
-    FBComponentList,
-    FBFindObjectsByName
+from ayon_motionbuilder.api.lib import (
+    read, imprint, get_node_by_name
 )
+from pyfbsdk import FBSet
+
 
 
 class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
@@ -66,7 +65,7 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
             )
             self.log.info("Auto-creating workfile instance...")
             instance_node = self.create_node(product_name)
-            data["instance_node"] = instance_node.Name
+            data["instance_node"] = instance_node
             current_instance = CreatedInstance(
                 self.product_type, product_name, data, self
             )
@@ -99,11 +98,8 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
         self.cache_instance_data(self.collection_shared_data)
         cached_instances = self.collection_shared_data["mbuilder_cached_instances"]
         for instance in cached_instances.get(self.identifier, []):
-            cl = FBComponentList()
-            FBFindObjectsByName((f"{instance}"), cl, True, True)
-            node = next((c for c in cl), None)
             created_instance = CreatedInstance.from_existing(
-                read(node), self
+                read(get_node_by_name(instance)), self
             )
             self._add_instance_to_context(created_instance)
 
@@ -111,14 +107,12 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
         for created_inst, _ in update_list:
             instance_node = created_inst.get("instance_node")
             imprint(
-                instance_node.Name,
+                instance_node,
                 created_inst.data_to_store()
             )
 
     def create_node(self, product_name):
-        cl = FBComponentList()
-        FBFindObjectsByName((f"{product_name}"), cl, True, True)
-        node = next((c for c in cl), None)
-        if not node:
-            node = FBSet(product_name)
-            return node
+        container_node = get_node_by_name(product_name)
+        if not container_node:
+            container_node = FBSet(product_name)
+            return container_node.Name
