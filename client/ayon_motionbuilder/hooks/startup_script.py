@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Pre-launch to force motion builder startup script."""
 import os
-from ayon_motionbuilder import MOTION_BUILDER_HOST_DIR
+from ayon_motionbuilder import MOTION_BUILDER_ADDON_ROOT
 from ayon_applications import PreLaunchHook, LaunchTypes
 
 
@@ -21,6 +21,6 @@ class ForceStartupScript(PreLaunchHook):
     def execute(self):
         startup_args = [
             "-suspendMessages",
-            os.path.join(MOTION_BUILDER_HOST_DIR, "startup", "startup.py"),
+            os.path.join(MOTION_BUILDER_ADDON_ROOT, "startup", "startup.py"),
         ]
         self.launch_context.launch_args.append(startup_args)

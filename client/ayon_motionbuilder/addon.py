@@ -2,7 +2,7 @@
 import os
 from ayon_core.addon import AYONAddon, IHostAddon
 
-MOTION_BUILDER_HOST_DIR = os.path.dirname(
+MOTION_BUILDER_ADDON_ROOT = os.path.dirname(
     os.path.abspath(__file__))
 
 
@@ -21,5 +21,5 @@ class MotionBuilderAddon(AYONAddon, IHostAddon):
         if app.host_name != self.host_name:
             return []
         return [
-            os.path.join(MOTION_BUILDER_HOST_DIR, "hooks")
+            os.path.join(MOTION_BUILDER_ADDON_ROOT, "hooks")
         ]

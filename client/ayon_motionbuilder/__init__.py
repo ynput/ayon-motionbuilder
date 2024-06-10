@@ -1,10 +1,10 @@
 from .addon import (
     MotionBuilderAddon,
-    MOTION_BUILDER_HOST_DIR,
+    MOTION_BUILDER_ADDON_ROOT,
 )
 
 
 __all__ = (
     "MotionBuilderAddon",
-    "MOTION_BUILDER_HOST_DIR",
+    "MOTION_BUILDER_ADDON_ROOT",
 )

@@ -13,7 +13,7 @@ from ayon_core.pipeline import (
     AVALON_CONTAINER_ID,
     AYON_CONTAINER_ID,
 )
-from ayon_motionbuilder import MOTION_BUILDER_HOST_DIR
+from ayon_motionbuilder import MOTION_BUILDER_ADDON_ROOT
 from ayon_motionbuilder.api.menu import AYONMenu
 from ayon_motionbuilder.api import lib
 
@@ -28,7 +28,7 @@ from pyfbsdk import (
 
 log = logging.getLogger("ayon_motionbuilder")
 
-PLUGINS_DIR = os.path.join(MOTION_BUILDER_HOST_DIR, "plugins")
+PLUGINS_DIR = os.path.join(MOTION_BUILDER_ADDON_ROOT, "plugins")
 PUBLISH_PATH = os.path.join(PLUGINS_DIR, "publish")
 LOAD_PATH = os.path.join(PLUGINS_DIR, "load")
 CREATE_PATH = os.path.join(PLUGINS_DIR, "create")
