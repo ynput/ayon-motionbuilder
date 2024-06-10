@@ -6,8 +6,6 @@ from .settings import MotionBuilderSettings, DEFAULT_VALUES
 
 
 class MotionBuilderAddon(BaseServerAddon):
-    name = ""
-    title = ""
     settings_model: Type[MotionBuilderSettings] = MotionBuilderSettings
 
     async def get_default_settings(self):
