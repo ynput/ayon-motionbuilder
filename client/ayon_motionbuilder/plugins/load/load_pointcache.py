@@ -30,7 +30,7 @@ class PointCacheLoader(load.LoaderPlugin):
         filename = self.filepath_from_context(context)
         app.FileAppend(filename, True, loadOptions)
         component_List = FBComponentList()
-        FBFindObjectsByName(namespace, component_List, True, True)
+        FBFindObjectsByName(( f"{namespace}:*"), component_List, True, False)
         objects = [obj for obj in component_List]
         return containerise(
             name, context, objects, namespace=namespace,
@@ -53,6 +53,9 @@ class PointCacheLoader(load.LoaderPlugin):
         self.update(container, context)
 
     def remove(self, container):
-        instance_node = container["instance_node"]
-        container = get_node_by_name(instance_node)
-        container.FBDelete()
+        namespace = container["namespace"]
+        component_List = FBComponentList()
+        FBFindObjectsByName(( f"{namespace}:*"), component_List, True, False)
+        objects = [obj for obj in component_List]
+        for obj in objects:
+            obj.FBDelete()

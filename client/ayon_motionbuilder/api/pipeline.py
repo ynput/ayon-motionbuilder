@@ -148,6 +148,7 @@ def containerise(name: str, context, objects, namespace=None, loader=None,
     container_group = FBSet(container_name)
     for obj in objects:
         container_group.ConnectSrc(obj)
+        container_group.PickUp = True
     container_group.ProcessObjectNamespace(
         FBNamespaceAction.kFBConcatNamespace, namespace)
     for key, value in data.items():
