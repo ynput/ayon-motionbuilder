@@ -4,6 +4,7 @@ from ayon_motionbuilder.api.lib import (
     unique_namespace, imprint, get_node_by_name
 )
 from pyfbsdk import (
+    FBSystem,
     FBApplication,
     FBElementAction,
     FBComponentList,
@@ -40,7 +41,7 @@ class PointCacheLoader(load.LoaderPlugin):
     def update(self, container, context):
         app = FBApplication()
         repre_entity = context["representation"]
-        namespace = repre_entity["namespace"]
+        namespace = container["namespace"]
         path = get_representation_path(repre_entity)
         loadOptions = FBFbxOptions(True)
         loadOptions.NamespaceList = namespace
@@ -55,7 +56,13 @@ class PointCacheLoader(load.LoaderPlugin):
     def remove(self, container):
         namespace = container["namespace"]
         component_List = FBComponentList()
+        container_node = container["instance_node"]
+        # Remove container in scene inventory
+        node = get_node_by_name(container_node)
+        node.FBDelete()
+        # Remove the connected object to the container
         FBFindObjectsByName(( f"{namespace}:*"), component_List, True, False)
         objects = [obj for obj in component_List]
         for obj in objects:
-            obj.FBDelete()
+            if obj in FBSystem().Scene.Components:
+                obj.FBDelete()
