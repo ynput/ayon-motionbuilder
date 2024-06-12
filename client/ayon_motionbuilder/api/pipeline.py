@@ -99,7 +99,28 @@ class MotionBuilderHost(HostBase, IWorkfileHost, ILoadHost, IPublishHost):
 
         return json.loads(ayon_context)
 
-def ls() -> list:
+
+def parse_container(container):
+    """Return the container node's full container data.
+
+    Args:
+        container (str): A container node name.
+
+    Returns:
+        dict: The container schema data for this container node.
+
+    """
+    data = lib.read(container)
+
+    # Backwards compatibility pre-schemas for containers
+    data["schema"] = data.get("schema", "openpype:container-3.0")
+
+    # Append transient data
+    data["objectName"] = container.Name
+    return data
+
+
+def ls():
     """Get all AYON containers."""
     containers = []
     for obj_sets in FBSystem().Scene.Sets:
@@ -110,7 +131,7 @@ def ls() -> list:
                     containers.append(obj_sets)
 
     for container in sorted(containers, key=attrgetter("Name")):
-        yield lib.read(container)
+        yield parse_container(container)
 
 
 def containerise(name: str, context, objects, namespace=None, loader=None,
