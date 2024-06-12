@@ -154,3 +154,55 @@ def get_node_by_name(node_name: str):
                         if s.Name == node_name]
     node = next(iter(matching_sets), None)
     return node
+
+
+def get_selected_hierarchies(node, selection_data):
+    """Get the hierarchies/children from the top group
+
+    Args:
+        node (FBObject): FBSystem().Scene.RootModel.Children
+        selection_data (dict): data which stores the node selection
+    """
+    selected = True
+    if node.ClassName() in {
+        "FBModel", "FBModelSkeleton", "FBModelMarker",
+        "FBCamera", "FBModelNull"}:
+            if selection_data:
+                for name in selection_data.keys():
+                    if node.Name == name:
+                        selected = selection_data[name]
+            node.Selected = selected
+    for child in node.Children:
+        get_selected_hierarchies(child, selection_data)
+
+
+def parsed_selected_hierarchies(node):
+    """Parse the data to find the selected hierarchies
+    Args:
+        node (FBObject): FBSystem().Scene.RootModel.Children
+    """
+    selection_data = {}
+    if node.ClassName() in {
+        "FBModel", "FBModelSkeleton", "FBModelMarker",
+        "FBCamera", "FBModelNull"}:
+            selection_data[node.Name] = node.Selected
+    for child in node.Children:
+        parsed_selected_hierarchies(child)
+    return selection_data
+
+
+@contextlib.contextmanager
+def maintain_selection(selected_nodes):
+    """Maintain selection during context
+
+    Args:
+        selected_nodes (FBObject): selected nodes
+    """
+    if not selected_nodes:
+        return
+    selection_data = parsed_selected_hierarchies(selected_nodes)
+    try:
+        get_selected_hierarchies(selected_nodes, {})
+        yield
+    finally:
+        get_selected_hierarchies(selected_nodes, selection_data)
