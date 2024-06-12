@@ -7,8 +7,6 @@ from ayon_motionbuilder.api import plugin
 from ayon_motionbuilder.api.lib import (
     read, imprint, get_node_by_name
 )
-from pyfbsdk import FBSet
-
 
 
 class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
@@ -110,9 +108,3 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
                 instance_node,
                 created_inst.data_to_store()
             )
-
-    def create_node(self, product_name):
-        container_node = get_node_by_name(product_name)
-        if not container_node:
-            container_node = FBSet(product_name)
-            return container_node.Name
