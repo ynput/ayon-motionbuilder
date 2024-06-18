@@ -23,9 +23,20 @@ def read(container) -> dict:
         for prop in container.PropertyList if
             prop.GetName() in {
                 "schema", "id", "name",
-                "namespace", "loader", "representation"
+                "namespace", "loader", "representation",
+                "active", "productType", "productName",
+                "creator_identifier", "variant",
+                "folderPath", "task", "instance_id"
                 }
     }
+    json_props = {
+        prop.GetName(): prop.AsString()
+        for prop in container.PropertyList if
+            prop.GetName() in { "creator_attributes", "publish_attributes"}
+            and prop.AsString().startswith(JSON_PREFIX)
+
+    }
+    props.update(json_props)
     # this shouldn't happen but let's guard against it anyway
     if not props:
         return data
@@ -44,21 +55,20 @@ def read(container) -> dict:
 
 
 def imprint(container: str, data: dict) -> bool:
-    if not container:
-        return False
     container_group = get_node_by_name(container)
+    if not container_group:
+        return False
     for key, value in data.items():
         target_param = container_group.PropertyList.Find(key)
         if target_param is None:
             container_group.PropertyCreate(key, FBPropertyType.kFBPT_charptr,
-                                           value, False, True, None)
+                                           "", False, True, None)
             target_param = container_group.PropertyList.Find(key)
-            return True
         target_param.SetLocked(False)
         if isinstance(value, (dict, list)):
             target_param.Data = f"{JSON_PREFIX}{json.dumps(value)}"
         else:
-            target_param.Data = value
+            target_param.Data = str(value)
         target_param.SetLocked(True)
 
     return True
@@ -200,9 +210,10 @@ def maintain_selection(selected_nodes):
     """
     if not selected_nodes:
         return
-    selection_data = parsed_selected_hierarchies(selected_nodes)
-    try:
-        get_selected_hierarchies(selected_nodes, {})
-        yield
-    finally:
-        get_selected_hierarchies(selected_nodes, selection_data)
+    for node in selected_nodes:
+        previous_selection = node.Selected
+        try:
+            node.Selected = True
+            yield
+        finally:
+            node.Selected = previous_selection

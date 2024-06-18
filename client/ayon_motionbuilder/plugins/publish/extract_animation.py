@@ -25,20 +25,14 @@ class ExtractAnimation(publish.Extractor):
         app = FBApplication()
         saveOptions = FBFbxOptions(True)
         creator_attributes = instance.data["creator_attributes"]
-        has_selection = instance.data.get("selected_nodes")
         saveOptions.KeepTransformHierarchy = (
             True if creator_attributes.get("KeepTransformHierarchy")
             else False)
         # TODO: Select the model which needs to export
-        if has_selection:
-            saveOptions.SaveSelectedModelsOnly = (
-                True if creator_attributes.get("SaveSelectedModelsOnly")
-                else False)
-        selected_nodes = [node.Name for node in
-                          FBSystem().Scene.RootModel.Children
-                          if node.Name in has_selection]
-        with maintain_selection(selected_nodes):
-            app.FileSave(filepath, False, saveOptions)
+        saveOptions.SaveSelectedModelsOnly = (
+            True if creator_attributes.get("SaveSelectedModelsOnly")
+            else False)
+        app.FileSave(filepath, saveOptions)
 
         representation = {
             'name': 'fbx',

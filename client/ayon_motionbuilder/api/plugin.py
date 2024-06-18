@@ -32,10 +32,11 @@ class MotionBuilderCreatorBase(object):
                 if prop.GetName() == "creator_identifier":
                     creator_id = prop.AsString()
                     if creator_id not in shared_data["mbuilder_cached_instances"]:
+                        print(creator_id)
                         shared_data["mbuilder_cached_instances"][creator_id] = [i.Name]
                     else:
                         shared_data[
-                            "mbuilder_cached_instances"][creator_id].append(i.name)
+                            "mbuilder_cached_instances"][creator_id].append(i.Name)
         return shared_data
 
     def create_node(self, product_name):
@@ -60,8 +61,11 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
                 creator_attributes[key] = pre_create_data[key]
         instance_node = self.create_node(product_name)
         instance_data["instance_node"] = instance_node
+        # TODO: supports to select models to be published
         if pre_create_data.get("SaveSelectedModelsOnly"):
-            instance_data["selected_nodes"] = get_selection()
+            instance_data["selected_nodes"] = [
+                sel.Name for sel in get_selection()
+            ]
             node = get_node_by_name(instance_node)
             for sel in get_selection():
                 node.ConnectSrc(sel)
@@ -83,11 +87,27 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
             created_instance = CreatedInstance.from_existing(
                 read(get_node_by_name(instance)), self
             )
+            print(created_instance)
             self._add_instance_to_context(created_instance)
 
     def update_instances(self, update_list):
-        for created_inst, _ in update_list:
+        for created_inst, changes in update_list:
             instance_node = created_inst.get("instance_node")
+            new_values = {
+                key: changes[key].new_value
+                for key in changes.changed_keys
+            }
+            product_name = new_values.get("productName", "")
+            if product_name and instance_node != product_name:
+                node = get_node_by_name(instance_node)
+                new_product_name = new_values["productName"]
+                if get_node_by_name(new_product_name):
+                    raise CreatorError(
+                        "The product '{}' already exists.".format(
+                            new_product_name))
+                instance_node = new_product_name
+                created_inst["instance_node"] = instance_node
+                node.Name = instance_node
             imprint(
                 instance_node,
                 created_inst.data_to_store()
@@ -117,6 +137,6 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
 
 def get_selection():
     return [
-        component.Name for component in FBSystem().Scene.Components
-        if component.Selected == True and component.ClassName == "FBModel"
+        component for component in FBSystem().Scene.Components
+        if component.Selected == True
     ]
