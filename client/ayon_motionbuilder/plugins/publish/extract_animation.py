@@ -23,8 +23,11 @@ class ExtractAnimation(publish.Extractor):
             staging_dir, asset_filename).replace("\\", "/")
 
         app = FBApplication()
-        saveOptions = FBFbxOptions(True)
+        saveOptions = FBFbxOptions(False)
         creator_attributes = instance.data["creator_attributes"]
+        saveOptions.EmbedMedia = (
+            True if creator_attributes.get("EmbedMedia")
+            else False)
         saveOptions.KeepTransformHierarchy = (
             True if creator_attributes.get("KeepTransformHierarchy")
             else False)
@@ -32,7 +35,12 @@ class ExtractAnimation(publish.Extractor):
         saveOptions.SaveSelectedModelsOnly = (
             True if creator_attributes.get("SaveSelectedModelsOnly")
             else False)
-        app.FileSave(filepath, saveOptions)
+        selected_nodes = [node for node in
+                          FBSystem().Scene.RootModel.Children
+                          if node.Name in instance.data.get(
+                              "selected_nodes", [])]
+        with maintain_selection(selected_nodes):
+            app.FileSave(filepath, saveOptions)
 
         representation = {
             'name': 'fbx',

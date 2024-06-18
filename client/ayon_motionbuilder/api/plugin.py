@@ -126,14 +126,18 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
                instance_node.FBDelete()
             self._remove_instance_from_context(instance)
 
-
-    def get_pre_create_attr_defs(self):
+    def get_instance_attr_defs(self):
         return [
+            BoolDef("EmbedMedia",
+                    label="Embed Media"),
             BoolDef("SaveSelectedModelsOnly",
                     label="Save Selected Models Only"),
             BoolDef("KeepTransformHierarchy",
                     label="Keep Transform Hierarchy"),
         ]
+
+    def get_pre_create_attr_defs(self):
+        return self.get_instance_attr_defs()
 
 def get_selection():
     return [

@@ -47,7 +47,8 @@ def read(container) -> dict:
                 value.startswith(JSON_PREFIX):
             with contextlib.suppress(json.JSONDecodeError):
                 value = json.loads(value[len(JSON_PREFIX):])
-
+        if key == "active":
+            value = True if value == "True" else False
         data[key.strip()] = value
 
     data["instance_node"] = container.Name

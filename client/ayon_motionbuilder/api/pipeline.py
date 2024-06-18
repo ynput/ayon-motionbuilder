@@ -57,7 +57,7 @@ class MotionBuilderHost(HostBase, IWorkfileHost, ILoadHost, IPublishHost):
         self._has_been_setup = True
 
     def workfile_has_unsaved_changes(self):
-        return None
+        return FBApplication().IsSceneModified()
 
     def get_workfile_extensions(self):
         return [".fbx"]
