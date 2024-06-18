@@ -99,7 +99,6 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
             created_instance = CreatedInstance.from_existing(
                 read(get_node_by_name(instance)), self
             )
-            print(created_instance)
             self._add_instance_to_context(created_instance)
 
     def update_instances(self, update_list):
