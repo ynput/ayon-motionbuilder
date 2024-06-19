@@ -53,6 +53,7 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
         creator_attributes = instance_data.setdefault(
             "creator_attributes", dict())
         for key in [
+            "EmbedMedia",
             "SaveSelectedModelsOnly",
             "KeepTransformHierarchy",
         ]:

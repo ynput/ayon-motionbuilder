@@ -29,6 +29,14 @@ def read(container) -> dict:
                 "folderPath", "task", "instance_id"
                 }
     }
+    # make sure the data of creator_attributes and publish_attributes
+    # being synced correctly
+    props.update({
+        prop.GetName(): prop.AsString()
+        for prop in container.PropertyList if
+            prop.GetName() in {"creator_attributes", "publish_attributes"}
+            and prop.AsString().startswith(JSON_PREFIX)
+    })
     # this shouldn't happen but let's guard against it anyway
     if not props:
         return data
