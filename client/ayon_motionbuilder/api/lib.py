@@ -29,14 +29,6 @@ def read(container) -> dict:
                 "folderPath", "task", "instance_id"
                 }
     }
-    json_props = {
-        prop.GetName(): prop.AsString()
-        for prop in container.PropertyList if
-            prop.GetName() in { "creator_attributes", "publish_attributes"}
-            and prop.AsString().startswith(JSON_PREFIX)
-
-    }
-    props.update(json_props)
     # this shouldn't happen but let's guard against it anyway
     if not props:
         return data
@@ -48,7 +40,7 @@ def read(container) -> dict:
             with contextlib.suppress(json.JSONDecodeError):
                 value = json.loads(value[len(JSON_PREFIX):])
         if key == "active":
-            value = True if value == "True" else False
+            value = eval(value)
         data[key.strip()] = value
 
     data["instance_node"] = container.Name

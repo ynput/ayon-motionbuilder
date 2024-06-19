@@ -32,7 +32,6 @@ class MotionBuilderCreatorBase(object):
                 if prop.GetName() == "creator_identifier":
                     creator_id = prop.AsString()
                     if creator_id not in shared_data["mbuilder_cached_instances"]:
-                        print(creator_id)
                         shared_data["mbuilder_cached_instances"][creator_id] = [i.Name]
                     else:
                         shared_data[
@@ -87,7 +86,6 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
             created_instance = CreatedInstance.from_existing(
                 read(get_node_by_name(instance)), self
             )
-            print(created_instance)
             self._add_instance_to_context(created_instance)
 
     def update_instances(self, update_list):
