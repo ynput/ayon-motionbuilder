@@ -69,5 +69,8 @@ class PointCacheLoader(load.LoaderPlugin):
             for obj in objects:
                 if obj in FBSystem().Scene.Components:
                     obj.FBDelete()
+            # clear unused namespace
+            if FBSystem().Scene.NamespaceEmpty(namespace):
+                FBSystem().Scene.NamespaceDelete(namespace)
         except Exception:
             pass
