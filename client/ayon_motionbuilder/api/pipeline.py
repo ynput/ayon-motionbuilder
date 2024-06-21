@@ -26,6 +26,9 @@ from pyfbsdk import (
     FBPropertyType
 )
 
+
+JSON_PREFIX = "JSON::"
+
 log = logging.getLogger("ayon_motionbuilder")
 
 PLUGINS_DIR = os.path.join(MOTION_BUILDER_ADDON_ROOT, "plugins")
@@ -125,20 +128,18 @@ def ls():
     containers = []
     for obj_sets in FBSystem().Scene.Sets:
         for prop in obj_sets.PropertyList:
-            if prop.AsString() in {
-                AYON_CONTAINER_ID, AVALON_CONTAINER_ID
-                }:
+            if prop.GetName() == "containers":
                     containers.append(obj_sets)
 
     for container in sorted(containers, key=attrgetter("Name")):
-        yield parse_container(container)
+        yield(parse_container(container))
 
 
 def containerise(name: str, context, objects, namespace=None, loader=None,
                  suffix="_CON"):
     data = {
         "schema": "openpype:container-2.0",
-        "id": AVALON_CONTAINER_ID,
+        "id": AVALON_CONTAINER_ID or AYON_CONTAINER_ID,
         "name": name,
         "namespace": namespace or "",
         "loader": loader,
@@ -151,11 +152,11 @@ def containerise(name: str, context, objects, namespace=None, loader=None,
         container_group.PickUp = True
     container_group.ProcessObjectNamespace(
         FBNamespaceAction.kFBConcatNamespace, namespace)
-    for key, value in data.items():
-        container_group.PropertyCreate(
-            key, FBPropertyType.kFBPT_charptr, value, False, True, None)
-        target_param = container_group.PropertyList.Find(key)
-        target_param.Data = value
-    if not lib.imprint(container_name, data):
+    container_group.PropertyCreate(
+        "containers", FBPropertyType.kFBPT_charptr, "", False, True, None)
+    target_param = container_group.PropertyList.Find("containers")
+    target_param.Data = f"{JSON_PREFIX}{json.dumps(data)}"
+    container_data = {"containers": data}
+    if not lib.imprint(container_name, container_data):
         print(f"imprinting of {container_name} failed.")
     return container_group

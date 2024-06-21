@@ -1,6 +1,8 @@
 """Motion Builder specific AYON/Pyblish plugin definitions."""
 from abc import ABCMeta
 import six
+import json
+import contextlib
 from ayon_core.lib import BoolDef
 from ayon_core.pipeline import (
     CreatedInstance,
@@ -11,7 +13,10 @@ from ayon_core.pipeline import (
 )
 
 from pyfbsdk import FBSet, FBSystem
-from .lib import lsattr, imprint, read, get_node_by_name
+from .lib import lsattr, instances_imprint, read, get_node_by_name
+
+
+JSON_PREFIX = "JSON::"
 
 
 class MotionBuilderCreatorBase(object):
@@ -28,15 +33,16 @@ class MotionBuilderCreatorBase(object):
             cached_instances.extend(lsattr("id", id_type))
 
         for i in cached_instances:
-            for prop in i.PropertyList:
-                if prop.GetName() == "creator_identifier":
-                    creator_id = prop.AsString()
-                    if creator_id not in shared_data["mbuilder_cached_instances"]:
-                        shared_data["mbuilder_cached_instances"][creator_id] = [i.Name]
-                    else:
-                        shared_data[
-                            "mbuilder_cached_instances"][creator_id].append(i.Name)
-        return shared_data
+            instances_param = i.PropertyList.Find("instances")
+            data = instances_param.Data
+            with contextlib.suppress(json.JSONDecodeError):
+                data = json.loads(data[len(JSON_PREFIX):])
+            creator_id = data.get("creator_identifier")
+            if creator_id not in shared_data["mbuilder_cached_instances"]:
+                shared_data["mbuilder_cached_instances"][creator_id] = [i.Name]
+            else:
+                shared_data[
+                    "mbuilder_cached_instances"][creator_id].append(i.Name)
 
     def create_node(self, product_name):
         container_node = get_node_by_name(product_name)
@@ -77,7 +83,7 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
             self
         )
         self._add_instance_to_context(instance)
-        imprint(instance_node, instance.data_to_store())
+        instances_imprint(instance_node, instance.data_to_store())
         return instance
 
     def collect_instances(self):
@@ -107,7 +113,8 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
                 instance_node = new_product_name
                 created_inst["instance_node"] = instance_node
                 node.Name = instance_node
-            imprint(
+
+            instances_imprint(
                 instance_node,
                 created_inst.data_to_store()
             )

@@ -47,8 +47,10 @@ class PointCacheLoader(load.LoaderPlugin):
         loadOptions.NamespaceList = namespace
         loadOptions.SetAll(FBElementAction.kFBElementActionAppend, True)
         app.FileMerge(path, True, loadOptions)
-        imprint(container["instance_node"],
-                {"representation": repre_entity["id"]})
+        imprint_repres = {
+            "containers": {"representation": repre_entity["id"]}
+        }
+        imprint(container["instance_node"], imprint_repres, update_asset=True)
 
     def switch(self, container, context):
         self.update(container, context)
