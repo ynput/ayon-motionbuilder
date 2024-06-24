@@ -96,7 +96,7 @@ def lsattr(
     for obj_sets in FBSystem().Scene.Sets:
         instances_param = obj_sets.PropertyList.Find("instances")
         if not instances_param:
-                continue
+            continue
         data = instances_param.Data
         parsed_data = {}
         with contextlib.suppress(json.JSONDecodeError):
