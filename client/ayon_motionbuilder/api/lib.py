@@ -217,12 +217,15 @@ def maintain_selection(selected_nodes):
     Args:
         selected_nodes (FBObject): selected nodes
     """
-    if not selected_nodes:
-        return
+    origin_selection = []
     for node in selected_nodes:
-        previous_selection = node.Selected
-        try:
-            node.Selected = True
-            yield
-        finally:
-            node.Selected = previous_selection
+        origin_selection.append((node, node.Selected))
+        node.Selected = True
+    
+    try:
+        yield
+        
+    finally:
+        for item in origin_selection:
+            node, selection = item
+            node.Selected = selection
