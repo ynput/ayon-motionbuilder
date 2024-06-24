@@ -9,7 +9,8 @@ from pyfbsdk import (
     FBElementAction,
     FBComponentList,
     FBFbxOptions,
-    FBFindObjectsByName
+    FBFindObjectsByName,
+    FBStringList
 )
 
 
@@ -27,7 +28,8 @@ class PointCacheLoader(load.LoaderPlugin):
         loadOptions = FBFbxOptions(True)
         loadOptions.SetAll(FBElementAction.kFBElementActionAppend, True)
         namespace = unique_namespace(name + "_", suffix="_")
-        loadOptions.NamespaceList = namespace
+        namespace_list = FBStringList(namespace)
+        loadOptions.SetMultiLoadNamespaceList(namespace_list)
         filename = self.filepath_from_context(context)
         app.FileAppend(filename, True, loadOptions)
         component_List = FBComponentList()
@@ -44,9 +46,12 @@ class PointCacheLoader(load.LoaderPlugin):
         namespace = container["namespace"]
         path = get_representation_path(repre_entity)
         loadOptions = FBFbxOptions(True)
-        loadOptions.NamespaceList = namespace
+        namespace_list = FBStringList(namespace)
+        loadOptions.SetMultiLoadNamespaceList(namespace_list)
+        current_file = app.FBXFileName
+        merged_filepath = FBStringList(f"{current_file}~{path}" )
         loadOptions.SetAll(FBElementAction.kFBElementActionAppend, True)
-        app.FileMerge(path, True, loadOptions)
+        app.FileMerge(merged_filepath, True, loadOptions)
         imprint_repres = {
             "containers": {"representation": repre_entity["id"]}
         }
