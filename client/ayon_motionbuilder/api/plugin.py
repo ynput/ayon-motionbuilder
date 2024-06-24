@@ -50,7 +50,6 @@ class MotionBuilderCreatorBase(object):
             container_node = FBSet(product_name)
             return container_node.Name
 
-@six.add_metaclass(ABCMeta)
 class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
 
     def create(self, product_name, instance_data, pre_create_data):
