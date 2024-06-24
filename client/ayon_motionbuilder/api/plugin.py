@@ -103,7 +103,6 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
             }
             product_name = new_values.get("productName", "")
             if product_name and instance_node != product_name:
-                node = get_node_by_name(instance_node)
                 new_product_name = new_values["productName"]
                 if get_node_by_name(new_product_name):
                     raise CreatorError(
@@ -111,7 +110,6 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
                             new_product_name))
                 instance_node = new_product_name
                 created_inst["instance_node"] = instance_node
-                node.Name = instance_node
 
             instances_imprint(
                 instance_node,
