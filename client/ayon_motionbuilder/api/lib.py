@@ -99,6 +99,7 @@ def lsattr(
         if not instances_param:
                 continue
         data = instances_param.Data
+        parsed_data = {}
         with contextlib.suppress(json.JSONDecodeError):
             parsed_data = json.loads(data[len(JSON_PREFIX):])
         if value and parsed_data.get(attr) == value:
