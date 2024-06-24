@@ -93,7 +93,6 @@ def lsattr(
         list of nodes.
     """
     nodes = []
-    parsed_data = {}
     for obj_sets in FBSystem().Scene.Sets:
         instances_param = obj_sets.PropertyList.Find("instances")
         if not instances_param:
