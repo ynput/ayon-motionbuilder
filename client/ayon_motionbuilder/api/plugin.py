@@ -1,8 +1,5 @@
 """Motion Builder specific AYON/Pyblish plugin definitions."""
-from abc import ABCMeta
-import six
 import json
-import contextlib
 from ayon_core.lib import BoolDef
 from ayon_core.pipeline import (
     CreatedInstance,
@@ -13,10 +10,14 @@ from ayon_core.pipeline import (
 )
 
 from pyfbsdk import FBSet, FBSystem
-from .lib import lsattr, instances_imprint, read, get_node_by_name
-
-
-JSON_PREFIX = "JSON::"
+from .lib import (
+    lsattr,
+    instances_imprint,
+    read,
+    get_node_by_name,
+    load_data_from_parameter,
+    JSON_PREFIX
+)
 
 
 class MotionBuilderCreatorBase(object):
@@ -34,9 +35,7 @@ class MotionBuilderCreatorBase(object):
 
         for i in cached_instances:
             instances_param = i.PropertyList.Find("instances")
-            data = instances_param.Data
-            with contextlib.suppress(json.JSONDecodeError):
-                data = json.loads(data[len(JSON_PREFIX):])
+            data = load_data_from_parameter(instances_param)
             creator_id = data.get("creator_identifier")
             if creator_id not in shared_data["mbuilder_cached_instances"]:
                 shared_data["mbuilder_cached_instances"][creator_id] = [i.Name]
@@ -53,10 +52,8 @@ class MotionBuilderCreatorBase(object):
 class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
 
     def create(self, product_name, instance_data, pre_create_data):
-        if get_node_by_name(product_name):
-            raise CreatorError(f"'{product_name}' is already created..")
         creator_attributes = instance_data.setdefault(
-            "creator_attributes", dict())
+            "creator_attributes", {})
         for key in [
             "EmbedMedia",
             "SaveSelectedModelsOnly",
@@ -72,8 +69,9 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
                 sel.Name for sel in get_selection()
             ]
             node = get_node_by_name(instance_node)
-            for sel in get_selection():
-                node.ConnectSrc(sel)
+            if node:
+                for sel in get_selection():
+                    node.ConnectSrc(sel)
 
         instance = CreatedInstance(
             self.product_type,
@@ -104,12 +102,10 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
             product_name = new_values.get("productName", "")
             if product_name and instance_node != product_name:
                 new_product_name = new_values["productName"]
-                if get_node_by_name(new_product_name):
-                    raise CreatorError(
-                        "The product '{}' already exists.".format(
-                            new_product_name))
+                node = get_node_by_name(instance_node)
                 instance_node = new_product_name
                 created_inst["instance_node"] = instance_node
+                node.Name = instance_node
 
             instances_imprint(
                 instance_node,

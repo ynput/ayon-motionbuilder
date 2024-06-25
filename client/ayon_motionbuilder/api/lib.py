@@ -28,12 +28,11 @@ def read(container) -> dict:
     if not props:
         return data
 
-    for _, value in props.items():
+    for value in props.values():
         value = value.strip()
         if isinstance(value.strip(), six.string_types) and \
                 value.startswith(JSON_PREFIX):
-            with contextlib.suppress(json.JSONDecodeError):
-                value = json.loads(value[len(JSON_PREFIX):])
+            value = json.loads(value[len(JSON_PREFIX):])
         data.update(value)
     data["instance_node"] = container.Name
     return data
@@ -53,9 +52,7 @@ def imprint(container: str, data: dict, update_asset=False) -> bool:
         if not update_asset:
             target_param.Data = f"{JSON_PREFIX}{json.dumps(value)}"
         else:
-            target_data = target_param.Data
-            with contextlib.suppress(json.JSONDecodeError):
-                parsed_data = json.loads(target_data[len(JSON_PREFIX):])
+            parsed_data = load_data_from_parameter(target_param)
             parsed_data.update(value)
             target_param.Data = f"{JSON_PREFIX}{json.dumps(parsed_data)}"
         target_param.SetLocked(True)
@@ -97,10 +94,7 @@ def lsattr(
         instances_param = obj_sets.PropertyList.Find("instances")
         if not instances_param:
             continue
-        data = instances_param.Data
-        parsed_data = {}
-        with contextlib.suppress(json.JSONDecodeError):
-            parsed_data = json.loads(data[len(JSON_PREFIX):])
+        parsed_data = load_data_from_parameter(instances_param)
         if value and parsed_data.get(attr) == value:
             nodes.append(obj_sets)
         elif parsed_data.get(attr):
@@ -229,3 +223,17 @@ def maintain_selection(selected_nodes):
         for item in origin_selection:
             node, selection = item
             node.Selected = selection
+
+
+def load_data_from_parameter(target_param):
+    """Load the ayon data from parameter
+
+    Args:
+        target_param (FBListPropertyObject): parameter to store ayon data
+
+    Returns:
+        dict: ayon-related data
+    """
+    data = target_param.Data
+    data = json.loads(data[len(JSON_PREFIX):])
+    return data

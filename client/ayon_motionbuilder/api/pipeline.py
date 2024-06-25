@@ -16,6 +16,7 @@ from ayon_core.pipeline import (
 from ayon_motionbuilder import MOTION_BUILDER_ADDON_ROOT
 from ayon_motionbuilder.api.menu import AYONMenu
 from ayon_motionbuilder.api import lib
+from ayon_motionbuilder.api.lib import JSON_PREFIX
 
 from pyfbsdk import (
     FBApplication,
@@ -27,7 +28,6 @@ from pyfbsdk import (
 )
 
 
-JSON_PREFIX = "JSON::"
 
 log = logging.getLogger("ayon_motionbuilder")
 
