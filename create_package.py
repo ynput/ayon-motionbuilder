@@ -293,7 +293,10 @@ def get_base_files_mapping() -> List[FileMapping]:
         filepaths_to_copy.append(
             (pyproject_toml, "private/pyproject.toml")
         )
-
+    filepaths_to_copy.append((
+        os.path.join(CURRENT_ROOT, "package.py"),
+        "package.py"
+    ))
     return filepaths_to_copy
 
 

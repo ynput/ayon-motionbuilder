@@ -16,6 +16,7 @@ from ayon_core.pipeline import (
 from ayon_motionbuilder import MOTION_BUILDER_ADDON_ROOT
 from ayon_motionbuilder.api.menu import AYONMenu
 from ayon_motionbuilder.api import lib
+from ayon_motionbuilder.api.lib import JSON_PREFIX
 
 from pyfbsdk import (
     FBApplication,
@@ -25,6 +26,8 @@ from pyfbsdk import (
     FBNamespaceAction,
     FBPropertyType
 )
+
+
 
 log = logging.getLogger("ayon_motionbuilder")
 
@@ -57,7 +60,7 @@ class MotionBuilderHost(HostBase, IWorkfileHost, ILoadHost, IPublishHost):
         self._has_been_setup = True
 
     def workfile_has_unsaved_changes(self):
-        return None
+        return FBApplication().IsSceneModified()
 
     def get_workfile_extensions(self):
         return [".fbx"]
@@ -125,20 +128,18 @@ def ls():
     containers = []
     for obj_sets in FBSystem().Scene.Sets:
         for prop in obj_sets.PropertyList:
-            if prop.AsString() in {
-                AYON_CONTAINER_ID, AVALON_CONTAINER_ID
-                }:
+            if prop.GetName() == "containers":
                     containers.append(obj_sets)
 
     for container in sorted(containers, key=attrgetter("Name")):
-        yield parse_container(container)
+        yield(parse_container(container))
 
 
 def containerise(name: str, context, objects, namespace=None, loader=None,
                  suffix="_CON"):
     data = {
         "schema": "openpype:container-2.0",
-        "id": AVALON_CONTAINER_ID,
+        "id": AVALON_CONTAINER_ID or AYON_CONTAINER_ID,
         "name": name,
         "namespace": namespace or "",
         "loader": loader,
@@ -148,13 +149,14 @@ def containerise(name: str, context, objects, namespace=None, loader=None,
     container_group = FBSet(container_name)
     for obj in objects:
         container_group.ConnectSrc(obj)
+        container_group.PickUp = True
     container_group.ProcessObjectNamespace(
         FBNamespaceAction.kFBConcatNamespace, namespace)
-    for key, value in data.items():
-        container_group.PropertyCreate(
-            key, FBPropertyType.kFBPT_charptr, value, False, True, None)
-        target_param = container_group.PropertyList.Find(key)
-        target_param.Data = value
-    if not lib.imprint(container_name, data):
+    container_group.PropertyCreate(
+        "containers", FBPropertyType.kFBPT_charptr, "", False, True, None)
+    target_param = container_group.PropertyList.Find("containers")
+    target_param.Data = f"{JSON_PREFIX}{json.dumps(data)}"
+    container_data = {"containers": data}
+    if not lib.imprint(container_name, container_data):
         print(f"imprinting of {container_name} failed.")
     return container_group

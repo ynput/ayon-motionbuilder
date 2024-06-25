@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import contextlib
 import logging
 import json
@@ -21,48 +22,57 @@ def read(container) -> dict:
     props = {
         prop.GetName(): prop.AsString()
         for prop in container.PropertyList if
-            prop.GetName() in {
-                "schema", "id", "name",
-                "namespace", "loader", "representation"
-                }
+            prop.GetName() in {"containers", "instances"}
     }
     # this shouldn't happen but let's guard against it anyway
     if not props:
         return data
 
-    for key, value in props.items():
+    for value in props.values():
         value = value.strip()
         if isinstance(value.strip(), six.string_types) and \
                 value.startswith(JSON_PREFIX):
-            with contextlib.suppress(json.JSONDecodeError):
-                value = json.loads(value[len(JSON_PREFIX):])
-
-        data[key.strip()] = value
-
+            value = json.loads(value[len(JSON_PREFIX):])
+        data.update(value)
     data["instance_node"] = container.Name
     return data
 
 
-def imprint(container: str, data: dict) -> bool:
-    if not container:
-        return False
+def imprint(container: str, data: dict, update_asset=False) -> bool:
     container_group = get_node_by_name(container)
+    if not container_group:
+        return False
     for key, value in data.items():
         target_param = container_group.PropertyList.Find(key)
         if target_param is None:
             container_group.PropertyCreate(key, FBPropertyType.kFBPT_charptr,
-                                           value, False, True, None)
+                                            "", False, True, None)
             target_param = container_group.PropertyList.Find(key)
-            return True
         target_param.SetLocked(False)
-        if isinstance(value, (dict, list)):
+        if not update_asset:
             target_param.Data = f"{JSON_PREFIX}{json.dumps(value)}"
         else:
-            target_param.Data = value
+            parsed_data = load_data_from_parameter(target_param)
+            parsed_data.update(value)
+            target_param.Data = f"{JSON_PREFIX}{json.dumps(parsed_data)}"
         target_param.SetLocked(True)
 
     return True
 
+def instances_imprint(container: str, data: dict) -> bool:
+    container_group = get_node_by_name(container)
+    if not container_group:
+        return False
+    target_param = container_group.PropertyList.Find("instances")
+    if target_param is None:
+        container_group.PropertyCreate("instances", FBPropertyType.kFBPT_charptr,
+                                        "", False, True, None)
+        target_param = container_group.PropertyList.Find("instances")
+    target_param.SetLocked(False)
+    target_param.Data = f"{JSON_PREFIX}{json.dumps(data)}"
+    target_param.SetLocked(True)
+
+    return True
 
 def lsattr(
         attr: str,
@@ -81,11 +91,14 @@ def lsattr(
     """
     nodes = []
     for obj_sets in FBSystem().Scene.Sets:
-        for prop in obj_sets.PropertyList:
-            if value and prop.AsString() == value:
-                nodes.append(obj_sets)
-            elif prop.GetName() == attr:
-                nodes.append(obj_sets)
+        instances_param = obj_sets.PropertyList.Find("instances")
+        if not instances_param:
+            continue
+        parsed_data = load_data_from_parameter(instances_param)
+        if value and parsed_data.get(attr) == value:
+            nodes.append(obj_sets)
+        elif parsed_data.get(attr):
+            nodes.append(obj_sets)
     return nodes
 
 
@@ -154,3 +167,73 @@ def get_node_by_name(node_name: str):
                         if s.Name == node_name]
     node = next(iter(matching_sets), None)
     return node
+
+
+def get_selected_hierarchies(node, selection_data):
+    """Get the hierarchies/children from the top group
+
+    Args:
+        node (FBObject): FBSystem().Scene.RootModel.Children
+        selection_data (dict): data which stores the node selection
+    """
+    selected = True
+    if node.ClassName() in {
+        "FBModel", "FBModelSkeleton", "FBModelMarker",
+        "FBCamera", "FBModelNull"}:
+            if selection_data:
+                for name in selection_data.keys():
+                    if node.Name == name:
+                        selected = selection_data[name]
+            node.Selected = selected
+    for child in node.Children:
+        get_selected_hierarchies(child, selection_data)
+
+
+def parsed_selected_hierarchies(node):
+    """Parse the data to find the selected hierarchies
+    Args:
+        node (FBObject): FBSystem().Scene.RootModel.Children
+    """
+    selection_data = {}
+    if node.ClassName() in {
+        "FBModel", "FBModelSkeleton", "FBModelMarker",
+        "FBCamera", "FBModelNull"}:
+            selection_data[node.Name] = node.Selected
+    for child in node.Children:
+        parsed_selected_hierarchies(child)
+    return selection_data
+
+
+@contextlib.contextmanager
+def maintain_selection(selected_nodes):
+    """Maintain selection during context
+
+    Args:
+        selected_nodes (FBObject): selected nodes
+    """
+    origin_selection = []
+    for node in selected_nodes:
+        origin_selection.append((node, node.Selected))
+        node.Selected = True
+    
+    try:
+        yield
+        
+    finally:
+        for item in origin_selection:
+            node, selection = item
+            node.Selected = selection
+
+
+def load_data_from_parameter(target_param):
+    """Load the ayon data from parameter
+
+    Args:
+        target_param (FBListPropertyObject): parameter to store ayon data
+
+    Returns:
+        dict: ayon-related data
+    """
+    data = target_param.Data
+    data = json.loads(data[len(JSON_PREFIX):])
+    return data

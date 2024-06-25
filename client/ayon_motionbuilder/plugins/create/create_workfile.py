@@ -5,10 +5,8 @@ import ayon_api
 from ayon_core.pipeline import CreatedInstance, AutoCreator
 from ayon_motionbuilder.api import plugin
 from ayon_motionbuilder.api.lib import (
-    read, imprint, get_node_by_name
+    read, instances_imprint, get_node_by_name
 )
-from pyfbsdk import FBSet
-
 
 
 class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
@@ -70,7 +68,8 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
                 self.product_type, product_name, data, self
             )
             self._add_instance_to_context(current_instance)
-            imprint(instance_node, current_instance.data)
+            instances_imprint(
+                instance_node, current_instance.data_to_store())
         elif (
             current_instance["folderPath"] != folder_path
             or current_instance["task"] != task_name
@@ -106,13 +105,7 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
     def update_instances(self, update_list):
         for created_inst, _ in update_list:
             instance_node = created_inst.get("instance_node")
-            imprint(
+            instances_imprint(
                 instance_node,
                 created_inst.data_to_store()
             )
-
-    def create_node(self, product_name):
-        container_node = get_node_by_name(product_name)
-        if not container_node:
-            container_node = FBSet(product_name)
-            return container_node.Name
