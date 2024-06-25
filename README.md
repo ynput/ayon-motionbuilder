@@ -7,7 +7,7 @@ traditional keyframe animation.
 Path to Motion Builder executable must be set in the Ayon Setting in `Applications` addon (`ayon+settings://applications/applications/motionbuilder`) and added in `Anatomy`.`Attributes` for particular project to be visible in the Launcher.
 
 ### Implemented workflows
-Currently supports importing model/rig/animation/camera, exporting animation and saving/opening/publishing workfiles in MotionBuilder integration. All the associated data would be stored in `.zbrushmetadata` folder
+Currently supports importing model/rig/animation/camera, exporting animation and saving/opening/publishing workfiles in MotionBuilder integration.
 
 ## How to start
 There is a `create_package.py` python file which contains logic how to create the addon from AYON codebase. Just run the code.
