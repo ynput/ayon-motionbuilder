@@ -9,8 +9,7 @@ from ayon_core.pipeline import get_current_project_name
 from .testing import (
     run_tests_on_repository_workfile,
     test_create_on_repository_workfile,
-    run_tests,
-    test_create
+    test_publish_on_repository_workfile,
 )
 
 
@@ -133,6 +132,11 @@ class AYONMenu(object):
         test_create_repos_action.triggered.connect(self.test_create_repos_callback)
         ayon_menu.addAction(test_create_repos_action)
 
+        ayon_menu = self._get_or_create_ayon_menu()
+        test_publish_repos_action = QtWidgets.QAction("Test Publish On Repository Workfile", ayon_menu)
+        test_publish_repos_action.triggered.connect(self.test_publish_repos_callback)
+        ayon_menu.addAction(test_publish_repos_action)
+
     def load_callback(self):
         """Callback to show Loader tool."""
         host_tools.show_loader(parent=self.main_widget)
@@ -160,3 +164,6 @@ class AYONMenu(object):
     def test_create_repos_callback(self):
         """Callback to test create test on repository workfile"""
         test_create_on_repository_workfile()
+
+    def test_publish_repos_callback(self):
+        test_publish_on_repository_workfile()

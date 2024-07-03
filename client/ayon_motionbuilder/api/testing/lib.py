@@ -22,7 +22,7 @@ from ayon_core.pipeline.template_data import (
     get_folder_template_data,
 )
 
-from .tests import test_create
+from .tests import test_create, test_publish
 
 
 def _save_repository_workfile():
@@ -98,6 +98,7 @@ def create_error_report(context):
 def run_tests():
     try:
         test_create()
+        test_publish()
     except Exception as e:
         traceback.print_exc()
         raise(e)
@@ -116,6 +117,13 @@ def run_tests_on_repository_workfile():
 def test_create_on_repository_workfile():
     try:
         test_create()
+    except Exception as e:
+        traceback.print_exc()
+        raise(e)
+
+def test_publish_on_repository_workfile():
+    try:
+        test_publish()
     except Exception as e:
         traceback.print_exc()
         raise(e)

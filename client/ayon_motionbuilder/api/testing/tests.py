@@ -41,8 +41,23 @@ def test_create():
             for key, value in data["creator_attributes"].items():
                 created_instance.creator_attributes[key] = value
 
-        context.save_changes()
     print("Create was successful!")
+
+
+def test_publish():
+    """Test Publishing
+    """
+    # Validation should be successful so running a complete publish.
+    context = pyblish.util.publish()
+    success = True
+    for result in context.data["results"]:
+        if not result["success"]:
+            success = False
+            break
+
+    assert success, lib.create_error_report(context)
+
+    print("Publish was successful!")
 
 
 @contextlib.contextmanager
@@ -55,6 +70,7 @@ def select_model():
             component.Selected = True
         yield
     finally:
-        for key, value in original_selection.items():
-            node = get_node_by_name(key)
-            node.Selected = value
+        for component in FBSystem().Scene.Components:
+            for key, value in original_selection.items():
+                if component.Name == key:
+                        component.Selected = value
