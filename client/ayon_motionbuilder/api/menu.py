@@ -4,6 +4,15 @@ import os
 import logging
 from qtpy import QtWidgets, QtCore
 from ayon_core.tools.utils import host_tools
+from ayon_core.settings import get_project_settings
+from ayon_core.pipeline import get_current_project_name
+from .testing import (
+    run_tests_on_repository_workfile,
+    test_create_on_repository_workfile,
+    run_tests,
+    test_create
+)
+
 
 log = logging.getLogger("ayon_motionbuilder")
 
@@ -86,6 +95,10 @@ class AYONMenu(object):
 
     def _build_ayon_menu(self) -> QtWidgets.QAction:
         """Build items in AYON menu."""
+        project_settings = get_project_settings(
+            get_current_project_name()
+        )
+
         ayon_menu = self._get_or_create_ayon_menu()
         load_action = QtWidgets.QAction("Load...", ayon_menu)
         load_action.triggered.connect(self.load_callback)
@@ -109,6 +122,17 @@ class AYONMenu(object):
         workfiles_action.triggered.connect(self.workfiles_callback)
         ayon_menu.addAction(workfiles_action)
 
+        ayon_menu.addSeparator()
+        ayon_menu = self._get_or_create_ayon_menu()
+        test_save_repos_action = QtWidgets.QAction("Run Tests On Repository Workfile", ayon_menu)
+        test_save_repos_action.triggered.connect(self.test_save_repos_callback)
+        ayon_menu.addAction(test_save_repos_action)
+
+        ayon_menu = self._get_or_create_ayon_menu()
+        test_create_repos_action = QtWidgets.QAction("Test Create On Repository Workfile", ayon_menu)
+        test_create_repos_action.triggered.connect(self.test_create_repos_callback)
+        ayon_menu.addAction(test_create_repos_action)
+
     def load_callback(self):
         """Callback to show Loader tool."""
         host_tools.show_loader(parent=self.main_widget)
@@ -128,3 +152,11 @@ class AYONMenu(object):
     def workfiles_callback(self):
         """Callback to show Workfiles tool."""
         host_tools.show_workfiles(parent=self.main_widget)
+
+    def test_save_repos_callback(self):
+        """Callback to run tests on repository workfile"""
+        run_tests_on_repository_workfile()
+
+    def test_create_repos_callback(self):
+        """Callback to test create test on repository workfile"""
+        test_create_on_repository_workfile()

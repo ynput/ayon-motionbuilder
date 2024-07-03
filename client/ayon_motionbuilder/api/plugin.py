@@ -1,10 +1,8 @@
 """Motion Builder specific AYON/Pyblish plugin definitions."""
-import json
 from ayon_core.lib import BoolDef
 from ayon_core.pipeline import (
     CreatedInstance,
     Creator,
-    CreatorError,
     AYON_INSTANCE_ID,
     AVALON_INSTANCE_ID,
 )
@@ -16,7 +14,6 @@ from .lib import (
     read,
     get_node_by_name,
     load_data_from_parameter,
-    JSON_PREFIX
 )
 
 
