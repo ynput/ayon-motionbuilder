@@ -1,5 +1,3 @@
-import traceback
-
 import contextlib
 import pyblish.util
 from pyfbsdk import FBSystem
@@ -9,7 +7,6 @@ from ayon_core.pipeline import (
 from ayon_core.pipeline.create import CreateContext
 
 from . import lib
-from ayon_motionbuilder.api.lib import get_node_by_name
 
 # Needed for transition phase for asset/subset renaming. Can be hardcoded once
 # transition is done.
@@ -23,6 +20,7 @@ def test_create():
 
     host = registered_host()
     context = CreateContext(host)
+    # TODO: replace the hardcoded of the data
     data = {
         "creator_identifier": "io.ayon.creators.motionbuilder.animation",
         "creator_attributes": {

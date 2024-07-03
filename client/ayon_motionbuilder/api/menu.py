@@ -8,8 +8,9 @@ from ayon_core.settings import get_project_settings
 from ayon_core.pipeline import get_current_project_name
 from .testing import (
     run_tests_on_repository_workfile,
-    test_create_on_repository_workfile,
-    test_publish_on_repository_workfile,
+    test_create_on_current_workfile,
+    test_publish_on_current_workfile,
+    run_tests
 )
 
 
@@ -121,21 +122,37 @@ class AYONMenu(object):
         workfiles_action.triggered.connect(self.workfiles_callback)
         ayon_menu.addAction(workfiles_action)
 
-        ayon_menu.addSeparator()
-        ayon_menu = self._get_or_create_ayon_menu()
-        test_save_repos_action = QtWidgets.QAction("Run Tests On Repository Workfile", ayon_menu)
-        test_save_repos_action.triggered.connect(self.test_save_repos_callback)
-        ayon_menu.addAction(test_save_repos_action)
+        mb_settings = project_settings.get("motionbuilder")
+        if mb_settings:
+            if mb_settings.get("workfile_test"):
+                ayon_menu.addSeparator()
+                ayon_menu = self._get_or_create_ayon_menu()
+                test_save_repos_action = QtWidgets.QAction(
+                    "Run Tests On Repository Workfile", ayon_menu)
+                test_save_repos_action.triggered.connect(
+                    self.test_save_repos_callback)
+                ayon_menu.addAction(test_save_repos_action)
 
-        ayon_menu = self._get_or_create_ayon_menu()
-        test_create_repos_action = QtWidgets.QAction("Test Create On Repository Workfile", ayon_menu)
-        test_create_repos_action.triggered.connect(self.test_create_repos_callback)
-        ayon_menu.addAction(test_create_repos_action)
+                ayon_menu = self._get_or_create_ayon_menu()
+                test_save_workfile_action = QtWidgets.QAction(
+                    "Run Tests On Current Workfile", ayon_menu)
+                test_save_workfile_action.triggered.connect(
+                    self.test_save_workfile_callback)
+                ayon_menu.addAction(test_save_workfile_action)
 
-        ayon_menu = self._get_or_create_ayon_menu()
-        test_publish_repos_action = QtWidgets.QAction("Test Publish On Repository Workfile", ayon_menu)
-        test_publish_repos_action.triggered.connect(self.test_publish_repos_callback)
-        ayon_menu.addAction(test_publish_repos_action)
+                ayon_menu = self._get_or_create_ayon_menu()
+                test_create_workfile_action = QtWidgets.QAction(
+                    "Test Create On Current Workfile", ayon_menu)
+                test_create_workfile_action.triggered.connect(
+                    self.test_create_workfile_callback)
+                ayon_menu.addAction(test_create_workfile_action)
+
+                ayon_menu = self._get_or_create_ayon_menu()
+                test_publish_workfile_action = QtWidgets.QAction(
+                    "Test Publish On Current Workfile", ayon_menu)
+                test_publish_workfile_action.triggered.connect(
+                    self.test_publish_workfile_callback)
+                ayon_menu.addAction(test_publish_workfile_action)
 
     def load_callback(self):
         """Callback to show Loader tool."""
@@ -161,9 +178,14 @@ class AYONMenu(object):
         """Callback to run tests on repository workfile"""
         run_tests_on_repository_workfile()
 
-    def test_create_repos_callback(self):
-        """Callback to test create test on repository workfile"""
-        test_create_on_repository_workfile()
+    def test_save_workfile_callback(self):
+        """Callback to run tests on current workfile"""
+        run_tests()
 
-    def test_publish_repos_callback(self):
-        test_publish_on_repository_workfile()
+    def test_create_workfile_callback(self):
+        """Callback to run create test on current workfile"""
+        test_create_on_current_workfile()
+
+    def test_publish_workfile_callback(self):
+        """Callback to run publish test on current workfile"""
+        test_publish_on_current_workfile()

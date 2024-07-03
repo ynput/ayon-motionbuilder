@@ -1,20 +1,14 @@
 import os
 import traceback
 
-import pyblish.api
-
 import ayon_api
 from ayon_core.pipeline import (
     get_current_project_name,
     Anatomy,
     get_current_context,
-    get_current_host_name,
     registered_host
 )
-from ayon_core.pipeline.create import CreateContext
-from ayon_core.pipeline.workfile import (
-    get_last_workfile_with_version, get_workfile_template_key
-)
+from ayon_core.pipeline.workfile import get_last_workfile_with_version
 from ayon_api import get_folder_by_path, get_task_by_name
 from ayon_core.pipeline.template_data import (
     get_template_data,
@@ -114,14 +108,14 @@ def run_tests_on_repository_workfile():
         raise(e)
 
 
-def test_create_on_repository_workfile():
+def test_create_on_current_workfile():
     try:
         test_create()
     except Exception as e:
         traceback.print_exc()
         raise(e)
 
-def test_publish_on_repository_workfile():
+def test_publish_on_current_workfile():
     try:
         test_publish()
     except Exception as e:
