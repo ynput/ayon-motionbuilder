@@ -132,7 +132,7 @@ def ls():
                     containers.append(obj_sets)
 
     for container in sorted(containers, key=attrgetter("Name")):
-        yield(parse_container(container))
+        yield parse_container(container)
 
 
 def containerise(name: str, context, objects, namespace=None, loader=None,
