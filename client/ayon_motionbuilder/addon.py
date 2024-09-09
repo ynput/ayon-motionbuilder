@@ -4,7 +4,6 @@ from ayon_core.addon import AYONAddon, IHostAddon
 
 from .version import __version__
 
-
 MOTION_BUILDER_ADDON_ROOT = os.path.dirname(
     os.path.abspath(__file__))
 
