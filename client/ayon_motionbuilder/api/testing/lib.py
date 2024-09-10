@@ -115,7 +115,7 @@ def test_create_on_current_workfile():
         traceback.print_exc()
         raise(e)
 
-def test_publish_animation_on_current_workfile():
+def test_publish_on_current_workfile():
     try:
         test_publish_animation()
     except Exception as e:
