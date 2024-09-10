@@ -45,7 +45,6 @@ def test_create():
 def test_publish():
     """Test Publishing
     """
-    # Validation should be successful so running a complete publish.
     context = pyblish.util.publish()
     success = True
     for result in context.data["results"]:
