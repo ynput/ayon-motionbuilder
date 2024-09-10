@@ -132,10 +132,7 @@ def safe_copy_file(src_path: str, dst_path: str):
         return
 
     dst_dir: str = os.path.dirname(dst_path)
-    try:
-        os.makedirs(dst_dir)
-    except Exception:
-        pass
+    os.makedirs(dst_dir, exist_ok=True)
 
     shutil.copy2(src_path, dst_path)
 
@@ -272,7 +269,12 @@ def get_client_zip_content(log) -> io.BytesIO:
 
 
 def get_base_files_mapping() -> List[FileMapping]:
-    filepaths_to_copy: List[FileMapping] = []
+    filepaths_to_copy: List[FileMapping] = [
+        (
+            os.path.join(CURRENT_ROOT, "package.py"),
+            "package.py"
+        )
+    ]
     # Go through server, private and public directories and find all files
     for dirpath in (SERVER_ROOT, PRIVATE_ROOT, PUBLIC_ROOT):
         if not os.path.exists(dirpath):
@@ -293,10 +295,7 @@ def get_base_files_mapping() -> List[FileMapping]:
         filepaths_to_copy.append(
             (pyproject_toml, "private/pyproject.toml")
         )
-    filepaths_to_copy.append((
-        os.path.join(CURRENT_ROOT, "package.py"),
-        "package.py"
-    ))
+
     return filepaths_to_copy
 
 
@@ -353,6 +352,8 @@ def copy_addon_package(
     # Copy server content
     for src_file, dst_subpath in files_mapping:
         dst_path: str = os.path.join(addon_output_dir, dst_subpath)
+        dst_dir: str = os.path.dirname(dst_path)
+        os.makedirs(dst_dir, exist_ok=True)
         if isinstance(src_file, io.BytesIO):
             with open(dst_path, "wb") as stream:
                 stream.write(src_file.getvalue())
@@ -382,7 +383,7 @@ def create_addon_package(
             else:
                 zipf.write(src_file, dst_subpath)
 
-    log.info(f"Package created")
+    log.info("Package created")
 
 
 def main(
