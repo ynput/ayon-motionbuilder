@@ -9,7 +9,7 @@ from ayon_core.pipeline.create import CreateContext
 from . import lib
 
 
-def test_create():
+def test_create_animation():
     """Test re-creating instances in workfile.
     """
 
@@ -37,7 +37,7 @@ def test_create():
     print("Create was successful!")
 
 
-def test_publish():
+def test_publish_animation():
     """Test Publishing
     """
     context = pyblish.util.publish()
