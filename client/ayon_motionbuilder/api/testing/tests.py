@@ -8,11 +8,6 @@ from ayon_core.pipeline.create import CreateContext
 
 from . import lib
 
-# Needed for transition phase for asset/subset renaming. Can be hardcoded once
-# transition is done.
-product_key_name = "productName"
-product_type_key_name = "productType"
-
 
 def test_create():
     """Test re-creating instances in workfile.
