@@ -65,8 +65,14 @@ def instances_imprint(container: str, data: dict) -> bool:
         return False
     target_param = container_group.PropertyList.Find("instances")
     if target_param is None:
-        container_group.PropertyCreate("instances", FBPropertyType.kFBPT_charptr,
-                                        "", False, True, None)
+        container_group.PropertyCreate(
+            "instances",
+            FBPropertyType.kFBPT_charptr,
+            "",
+            False,
+            True,
+            None
+        )
         target_param = container_group.PropertyList.Find("instances")
     target_param.SetLocked(False)
     target_param.Data = f"{JSON_PREFIX}{json.dumps(data)}"
@@ -215,10 +221,10 @@ def maintain_selection(selected_nodes):
     for node in selected_nodes:
         origin_selection.append((node, node.Selected))
         node.Selected = True
-    
+
     try:
         yield
-        
+
     finally:
         for item in origin_selection:
             node, selection = item

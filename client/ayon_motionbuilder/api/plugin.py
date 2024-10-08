@@ -1,10 +1,8 @@
 """Motion Builder specific AYON/Pyblish plugin definitions."""
-import json
 from ayon_core.lib import BoolDef
 from ayon_core.pipeline import (
     CreatedInstance,
     Creator,
-    CreatorError,
     AYON_INSTANCE_ID,
     AVALON_INSTANCE_ID,
 )
@@ -16,7 +14,6 @@ from .lib import (
     read,
     get_node_by_name,
     load_data_from_parameter,
-    JSON_PREFIX
 )
 
 
@@ -85,7 +82,9 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
 
     def collect_instances(self):
         self.cache_instance_data(self.collection_shared_data)
-        cached_instances = self.collection_shared_data["mbuilder_cached_instances"]
+        cached_instances = (
+            self.collection_shared_data["mbuilder_cached_instances"]
+        )
         for instance in cached_instances.get(self.identifier, []):
             created_instance = CreatedInstance.from_existing(
                 read(get_node_by_name(instance)), self
@@ -120,7 +119,9 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
 
         """
         for instance in instances:
-            instance_node = get_node_by_name(instance.data.get("instance_node"))
+            instance_node = get_node_by_name(
+                instance.data.get("instance_node")
+            )
             if instance_node:
                instance_node.FBDelete()
             self._remove_instance_from_context(instance)
@@ -141,5 +142,5 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
 def get_selection():
     return [
         component for component in FBSystem().Scene.Components
-        if component.Selected == True
+        if component.Selected is True
     ]
