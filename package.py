@@ -2,7 +2,7 @@
 """Package declaring Motion Builder addon version."""
 name = "motionbuilder"
 title = "Motion Builder"
-version = "0.1.1"
+version = "0.1.1+dev"
 client_dir = "ayon_motionbuilder"
 
 ayon_required_addons = {
