@@ -69,7 +69,7 @@ class PointCacheLoader(load.LoaderPlugin):
             node = get_node_by_name(container_node)
             node.FBDelete()
             # Remove the connected object to the container
-            FBFindObjectsByName(( f"{namespace}:*"), component_List, True, False)
+            FBFindObjectsByName(f"{namespace}:*", component_List, True, False)
             objects = [obj for obj in component_List]
             for obj in objects:
                 if obj in FBSystem().Scene.Components:

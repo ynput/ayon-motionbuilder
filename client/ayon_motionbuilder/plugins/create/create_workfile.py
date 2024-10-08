@@ -95,7 +95,9 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
 
     def collect_instances(self):
         self.cache_instance_data(self.collection_shared_data)
-        cached_instances = self.collection_shared_data["mbuilder_cached_instances"]
+        cached_instances = (
+            self.collection_shared_data["mbuilder_cached_instances"]
+        )
         for instance in cached_instances.get(self.identifier, []):
             created_instance = CreatedInstance.from_existing(
                 read(get_node_by_name(instance)), self

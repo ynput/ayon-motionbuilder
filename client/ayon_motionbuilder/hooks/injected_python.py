@@ -17,4 +17,6 @@ class InjectPythonPath(PreLaunchHook):
     launch_types = {LaunchTypes.local}
 
     def execute(self):
-        self.launch_context.env["MOTIONBUILDER_PYTHON_STARTUP"] = os.environ["PYTHONPATH"]
+        self.launch_context.env["MOTIONBUILDER_PYTHON_STARTUP"] = (
+            os.environ["PYTHONPATH"]
+        )

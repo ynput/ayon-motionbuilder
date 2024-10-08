@@ -9,8 +9,8 @@ class ForceStartupScript(PreLaunchHook):
     """Inject AYON environment to motion builder.
 
     Note that this works in combination whit motion builder startup script that
-    is translating it back to PYTHONPATH for cases when motion builder drops PYTHONPATH
-    environment.
+    is translating it back to PYTHONPATH for cases when motion builder
+    drops PYTHONPATH environment.
 
     Hook `GlobalHostDataHook` must be executed before this hook.
     """

@@ -56,8 +56,8 @@ class AYONMenu(object):
 
         Args:
             name (str, Optional): AYON menu name.
-            before (str, Optional): Name of the motion builder main menu item to
-                add AYON menu before.
+            before (str, Optional): Name of the motion builder main menu
+                item to add AYON menu before.
 
         Returns:
             QtWidgets.QAction: AYON menu action.
