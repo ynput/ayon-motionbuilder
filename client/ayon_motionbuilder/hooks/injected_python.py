@@ -2,7 +2,6 @@
 """Pre-launch hook to inject python environment."""
 import os
 from ayon_applications import PreLaunchHook, LaunchTypes
-from ayon_motionbuilder import MOTION_BUILDER_ADDON_ROOT
 
 
 class InjectPythonPath(PreLaunchHook):

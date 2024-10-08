@@ -215,10 +215,10 @@ def maintain_selection(selected_nodes):
     for node in selected_nodes:
         origin_selection.append((node, node.Selected))
         node.Selected = True
-    
+
     try:
         yield
-        
+
     finally:
         for item in origin_selection:
             node, selection = item
