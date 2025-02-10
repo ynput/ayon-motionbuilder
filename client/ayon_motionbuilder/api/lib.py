@@ -4,8 +4,6 @@ import logging
 import json
 from typing import Union
 
-import six
-
 from pyfbsdk import (
     FBFindObjectsByName,
     FBComponentList,
@@ -30,7 +28,7 @@ def read(container) -> dict:
 
     for value in props.values():
         value = value.strip()
-        if isinstance(value.strip(), six.string_types) and \
+        if isinstance(value.strip(), str) and \
                 value.startswith(JSON_PREFIX):
             value = json.loads(value[len(JSON_PREFIX):])
         data.update(value)
