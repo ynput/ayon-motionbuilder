@@ -65,10 +65,10 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
             instance_node = self.create_node(product_name)
             data["instance_node"] = instance_node
             current_instance = CreatedInstance(
-                creator_identifier=self.identifier,
-                name=product_name,
+                product_type=self.product_type,
+                product_name=product_name,
                 data=data,
-                creator=self,
+                creator=self
             )
             self._add_instance_to_context(current_instance)
             instances_imprint(
