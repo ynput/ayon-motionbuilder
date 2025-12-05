@@ -70,19 +70,12 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
             if node:
                 for sel in get_selection():
                     node.ConnectSrc(sel)
-        instance_kwargs = {
-            "product_type": self.product_type,
-            "product_name": product_name,
-            "data": instance_data,
-            "creator": self
-        }
-        if hasattr(self, "product_base_type"):
-            signature = inspect.signature(CreatedInstance)
-            if "product_base_type" in signature.parameters:
-                instance_kwargs["product_base_type"] = (
-                    self.product_base_type
-                )
-        instance = CreatedInstance(**instance_kwargs)
+        instance = CreatedInstance(
+            creator_identifier=self.identifier,
+            name=product_name,
+            data=instance_data,
+            creator=self,
+        )
         self._add_instance_to_context(instance)
         instances_imprint(instance_node, instance.data_to_store())
         return instance
