@@ -1,5 +1,4 @@
 """Motion Builder specific AYON/Pyblish plugin definitions."""
-import inspect
 from ayon_core.lib import BoolDef
 from ayon_core.pipeline import (
     CreatedInstance,
