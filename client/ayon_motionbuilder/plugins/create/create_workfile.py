@@ -12,6 +12,7 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
     identifier = "io.ayon.creators.motionbuilder.workfile"
     label = "Workfile"
     product_type = "workfile"
+    product_base_type = "workfile"
     icon = "fa5.file"
 
     default_variant = "Main"
