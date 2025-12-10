@@ -69,12 +69,11 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
             if node:
                 for sel in get_selection():
                     node.ConnectSrc(sel)
-
         instance = CreatedInstance(
-            self.product_type,
-            product_name,
-            instance_data,
-            self
+            product_type=self.product_type,
+            product_name=product_name,
+            data=instance_data,
+            creator=self
         )
         self._add_instance_to_context(instance)
         instances_imprint(instance_node, instance.data_to_store())

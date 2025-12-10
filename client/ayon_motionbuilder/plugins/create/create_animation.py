@@ -7,4 +7,5 @@ class CreateAnimation(plugin.MotionBuilderCreator):
     identifier = "io.ayon.creators.motionbuilder.animation"
     label = "Animation"
     product_type = "animation"
+    product_base_type = "animation"
     icon = "gears"
