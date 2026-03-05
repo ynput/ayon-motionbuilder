@@ -46,7 +46,10 @@ class MotionBuilderCreatorBase(object):
             container_node = FBSet(product_name)
             return container_node.Name
 
+
 class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
+    settings_category = "motionbuilder"
+    skip_discovery = True
 
     def create(self, product_name, instance_data, pre_create_data):
         creator_attributes = instance_data.setdefault(
@@ -69,8 +72,14 @@ class MotionBuilderCreator(Creator, MotionBuilderCreatorBase):
             if node:
                 for sel in get_selection():
                     node.ConnectSrc(sel)
+
+        product_type = instance_data.get("productType")
+        if not product_type:
+            product_type = self.product_base_type
+
         instance = CreatedInstance(
-            product_type=self.product_type,
+            product_base_type=self.product_base_type,
+            product_type=product_type,
             product_name=product_name,
             data=instance_data,
             creator=self

@@ -11,8 +11,8 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
     """Workfile auto-creator."""
     identifier = "io.ayon.creators.motionbuilder.workfile"
     label = "Workfile"
-    product_type = "workfile"
     product_base_type = "workfile"
+    product_type = product_base_type
     icon = "fa5.file"
 
     default_variant = "Main"
@@ -44,6 +44,7 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
                 task_entity=task_entity,
                 variant=variant,
                 host_name=host_name,
+                product_type=self.product_type,
             )
             data = {
                 "folderPath": folder_path,
@@ -64,6 +65,7 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
             instance_node = self.create_node(product_name)
             data["instance_node"] = instance_node
             current_instance = CreatedInstance(
+                product_base_type=self.product_base_type,
                 product_type=self.product_type,
                 product_name=product_name,
                 data=data,
@@ -84,6 +86,7 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
                 task_entity=task_entity,
                 variant=variant,
                 host_name=host_name,
+                product_type=self.product_type,
             )
 
             current_instance["folderPath"] = folder_entity["path"]
