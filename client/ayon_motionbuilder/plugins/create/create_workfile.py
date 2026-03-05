@@ -51,16 +51,6 @@ class CreateWorkfile(plugin.MotionBuilderCreatorBase, AutoCreator):
                 "task": task_name,
                 "variant": variant
             }
-
-            data.update(
-                self.get_dynamic_data(
-                    project_name,
-                    folder_entity,
-                    task_entity,
-                    variant,
-                    host_name,
-                    current_instance)
-            )
             self.log.info("Auto-creating workfile instance...")
             instance_node = self.create_node(product_name)
             data["instance_node"] = instance_node
