@@ -17,7 +17,8 @@ from pyfbsdk import (
 class PointCacheLoader(load.LoaderPlugin):
     """Motion Builder Point Cache Loader."""
 
-    product_types = {"model", "animation", "rig", "camera"}
+    product_base_types = {"model", "animation", "rig", "camera"}
+    product_types = product_base_types
     representations = {"fbx"}
     order = -9
     icon = "code-fork"
