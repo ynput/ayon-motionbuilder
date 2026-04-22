@@ -2,7 +2,7 @@
 """Package declaring Motion Builder addon version."""
 name = "motionbuilder"
 title = "Motion Builder"
-version = "0.2.1"
+version = "0.2.1+dev"
 app_host_name = "motionbuilder"
 client_dir = "ayon_motionbuilder"
 project_can_override_addon_version = True
