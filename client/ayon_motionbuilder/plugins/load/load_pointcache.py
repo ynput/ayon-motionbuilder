@@ -54,7 +54,10 @@ class PointCacheLoader(load.LoaderPlugin):
         loadOptions.SetAll(FBElementAction.kFBElementActionAppend, True)
         app.FileMerge(merged_filepath, True, loadOptions)
         imprint_repres = {
-            "containers": {"representation": repre_entity["id"]}
+            "containers": {
+                "representation": repre_entity["id"],
+                "project_name": context["project"]["name"],
+            }
         }
         imprint(container["instance_node"], imprint_repres, update_asset=True)
 

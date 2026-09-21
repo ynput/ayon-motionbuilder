@@ -144,6 +144,7 @@ def containerise(name: str, context, objects, namespace=None, loader=None,
         "namespace": namespace or "",
         "loader": loader,
         "representation": context["representation"]["id"],
+        "project_name": context["project"]["name"],
     }
     container_name = f"{name}{suffix}"
     container_group = FBSet(container_name)
